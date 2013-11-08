@@ -52,7 +52,7 @@ function rail(group, x1, y1, x2, y2)
 	rail.type = "rail"
 	
 	
-	local rail2 = display.newRect( x1, y1, len, 5 )
+	local rail2 = display.newRect( x1, y1+20, len, 5 )
 	rail2:setReferencePoint( display.TopLeftReferencePoint )
 	rail:setFillColor(200)
 	rail2.rotation = rot(dx, dy)
@@ -99,25 +99,25 @@ function scene:createScene( event )
 	train:addEventListener( "collision", train )
 	train:play()
 
-	physics.addBody( train, {density=1.0, friction=0, bounce=0, radius=30} )
+	physics.addBody( train, {density=1.0, friction=0, bounce=0, radius=10} )
 
 	
-	rail(group, 0,200, 200,250)
-	rail(group, 200,250, 250,250)
-	rail(group, 250,250, 300,200)
-	rail(group, 400,200, 500,250)
-	rail(group, 500,250, 800,250)
+	rail(group, 20,200, 220,250)
+	rail(group, 220,250, 270,250)
+	rail(group, 270,250, 360,200)
+	rail(group, 420,200, 520,250)
+	rail(group, 520,250, 820,250)
 	
-	rail(group, 800,300, 900,300)
-	rail(group, 900,300, 1000,200)
-	rail(group, 1000,200, 1150,200)
-	rail(group, 1250,150, 1400,150)
+	rail(group, 820,300, 920,300)
+	rail(group, 920,300, 1020,200)
+	rail(group, 1020,200, 1180,200)
+	rail(group, 1270,150, 1420,150)
 
 	addBanana(group, 220, 230)
 	addBanana(group, 1200, 100)
 	group:insert(train)
 
-	--knapp:addEventListener( "touch", jumpAction )
+	knapp:addEventListener( "touch", jumpAction )
 end
 
 function gameLoop(event)
