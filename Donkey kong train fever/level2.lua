@@ -49,8 +49,14 @@ end
 
 -- Called when the scene's view does not exist:
 function scene:createScene( event )
-	local group = self.view
+				physics.setGravity(0,60)
+	local group = display:newGroup()
+	self.view:insert(group)
 	gr = group
+	
+	local knapp = display.newRect(380, 0, 100, 100)
+	knapp:setFillColor(200)
+	self.view:insert(knapp)
 
 	group:addEventListener( "touch", jumpAction )
 	group:addEventListener( "key", jumpAction )
@@ -65,7 +71,8 @@ function scene:createScene( event )
 	rail(group, 0,200, 200,250)
 	rail(group, 200,250, 250,250)
 	rail(group, 250,250, 300,200)
-	rail(group, 400,200, 450,250)
+	rail(group, 400,200, 500,250)
+	rail(group, 500,250, 800,250)
 	
 	group:insert(ball)
 	
@@ -87,7 +94,8 @@ function scene:createScene( event )
 	end
 	 
 	ball.collision = onLocalCollision
-	ball:addEventListener( "collision", ball )	
+	ball:addEventListener( "collision", ball )
+	knapp:addEventListener( "touch", jumpAction )
 end
 
 function gameLoop(event)
@@ -96,11 +104,13 @@ end
 
 Runtime:addEventListener("enterFrame", gameLoop)
 
-function jumpAction()
+function jumpAction(event)
 	print("HALLO")
 	local touchOrSpace = event.phase == "began" or (event.phase == "down" and event.keyName == "space")
    	if ( touchOrSpace and cnt > 0 ) then
-    	ball:applyForce( 0, -800, ball.x, ball.y )
+		local vx, vy = ball:getLinearVelocity()
+		ball:setLinearVelocity(vx, 0)
+    	ball:applyForce( 0, -180, ball.x, ball.y )
    	end
 end
 
