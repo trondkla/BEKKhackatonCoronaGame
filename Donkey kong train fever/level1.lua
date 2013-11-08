@@ -88,9 +88,11 @@ function scene:createScene( event )
 	train.type = "train"
 	train.collision = trainTraffNoe
 	train:addEventListener( "collision", train )
+	--train:setLinearVelocity( 1, 0 )
 	train:play()
 
-	background:addEventListener( "touch", touchAction )
+	background:addEventListener( "touch", jumpAction )
+	background:addEventListener( "key", jumpAction )
 	
 	-- add physics to the crate
 	physics.addBody( train, { density=1.0, friction=0.3, bounce=0.1 } )
@@ -100,7 +102,15 @@ function scene:createScene( event )
 
 	addRail(group, railXPositions[1], halfH + 30, 0)
 	addRail(group, railXPositions[2], halfH + 30, 0)
-	addRail(group, railXPositions[3], halfH + 30, 10)
+	addRail(group, railXPositions[3], halfH + 30, -10)
+	addRail(group, railXPositions[4], halfH + 30, 0)
+	addRail(group, railXPositions[5], halfH + 30, 0)
+	addRail(group, railXPositions[6], halfH + 30, 0)
+	addRail(group, railXPositions[7], halfH + 30, 0)
+	addRail(group, railXPositions[8], halfH + 30, 0)
+	addRail(group, railXPositions[9], halfH + 30, 0)
+	addRail(group, railXPositions[10], halfH + 30, 0)
+
 
 	group:insert( train)
 
@@ -116,22 +126,24 @@ function addRail(group, x , y, r)
 	
 	-- define a shape that's slightly shorter than image bounds (set draw mode to "hybrid" or "debug" to see)
 	local railShape = { -25, -5, 25, -5, 25, 5, -25, 5 }
-	physics.addBody( rail, "static", { friction=0.3, shape=railShape } )
+	physics.addBody( rail, "static", { friction=0, shape=railShape } )
 
 	group:insert( rail)
 
 end
 
-function touchAction(event)
-   if ( event.phase == "began" and train.canJump > 0 ) then
-      train:applyForce( 0, -800, train.x, train.y )
-      train.canJump = 0;
-   end
+function jumpAction(event)
+	local touchOrSpace = event.phase == "began" or (event.phase == "down" and event.keyName == "space")
+   	if ( touchOrSpace and train.canJump > 0 ) then
+    	train:applyForce( 0, -800, train.x, train.y )
+    	train.canJump = 0;
+   	end
 end
 
 function trainTraffNoe(self, event)
 	if ( event.phase == "ended" ) then
  		if (event.other.type == "rail") then
+
  			train.canJump = 1
  		end
  	end
@@ -160,6 +172,13 @@ function scene:destroyScene( event )
 	package.loaded[physics] = nil
 	physics = nil
 end
+
+function gameLoop(event)
+	train.x = train.x+2;
+end
+
+Runtime:addEventListener("enterFrame", gameLoop)
+
 
 -----------------------------------------------------------------------------------------
 -- END OF YOUR IMPLEMENTATION
