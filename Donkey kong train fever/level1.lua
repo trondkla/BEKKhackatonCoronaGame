@@ -15,6 +15,8 @@ local train
 
 local railXPositions = { 0, 45, 90, 135, 180, 225, 270, 315, 360 }
 
+local rails = {}
+
 --------------------------------------------
 
 -- forward declarations and other locals
@@ -40,40 +42,39 @@ function scene:createScene( event )
 
 
 	local spriteGraphics = graphics.newImageSheet( "train.png", {
-    --array of tables representing each frame (required)
-    frames =
-    {
-        -- FRAME 1:
-        {
-            --all parameters below are required for each frame
-            x = 0,
-            y = 0,
-            width = 55,
-            height = 58
-        },
+	    --array of tables representing each frame (required)
+	    frames = {
+		        -- FRAME 1:
+		        {
+		            --all parameters below are required for each frame
+		            x = 0,
+		            y = 0,
+		            width = 55,
+		            height = 58
+		        },
 
-        -- FRAME 2:
-        {
-            x = 56,
-            y = 0,
-            width = 55,
-            height = 58
-        },
-        -- FRAME 3:
-        {
-            x = 113,
-            y = 0,
-            width = 55,
-            height = 58
-        },
+		        -- FRAME 2:
+		        {
+		            x = 56,
+		            y = 0,
+		            width = 55,
+		            height = 58
+		        },
+		        -- FRAME 3:
+		        {
+		            x = 113,
+		            y = 0,
+		            width = 55,
+		            height = 58
+		        },
 
-        -- FRAME 3 and so on...
-    },
+		        -- FRAME 3 and so on...
+		    },
 
-    --optional parameters; used for dynamic resolution support
-    sheetContentWidth = 165,
-    sheetContentHeight = 58
-})
+		    --optional parameters; used for dynamic resolution support
+		    sheetContentWidth = 165,
+		    sheetContentHeight = 58
+		})
 
 	train = display.newSprite( spriteGraphics, { 
 		name = "normalRun",  --name of animation sequence
@@ -88,14 +89,13 @@ function scene:createScene( event )
 	train.type = "train"
 	train.collision = trainTraffNoe
 	train:addEventListener( "collision", train )
-	--train:setLinearVelocity( 1, 0 )
 	train:play()
 
 	background:addEventListener( "touch", jumpAction )
 	background:addEventListener( "key", jumpAction )
 	
 	-- add physics to the crate
-	physics.addBody( train, { density=1.0, friction=0.3, bounce=0.1 } )
+	physics.addBody( train, { density=80.0, friction=0.3, bounce=0.1 } )
 	
 	-- all display objects must be inserted into group
 	group:insert( background )
@@ -103,17 +103,16 @@ function scene:createScene( event )
 	addRail(group, railXPositions[1], halfH + 30, 0)
 	addRail(group, railXPositions[2], halfH + 30, 0)
 	addRail(group, railXPositions[3], halfH + 30, -10)
-	addRail(group, railXPositions[4], halfH + 30, 0)
-	addRail(group, railXPositions[5], halfH + 30, 0)
-	addRail(group, railXPositions[6], halfH + 30, 0)
-	addRail(group, railXPositions[7], halfH + 30, 0)
-	addRail(group, railXPositions[8], halfH + 30, 0)
-	addRail(group, railXPositions[9], halfH + 30, 0)
-	addRail(group, railXPositions[10], halfH + 30, 0)
+	addRail(group, railXPositions[4], halfH + 20, -10)
+	addRail(group, railXPositions[5], halfH + 10, -10)
+	addRail(group, railXPositions[6], halfH     , -10)
+	addRail(group, railXPositions[7], halfH - 10, -10)
+	addRail(group, railXPositions[8], halfH - 20, 0)
+	addRail(group, railXPositions[9], halfH - 30, 0)
+	addRail(group, railXPositions[10], halfH - 40, 0)
 
 
 	group:insert( train)
-
 end
 
 function addRail(group, x , y, r)
@@ -128,6 +127,7 @@ function addRail(group, x , y, r)
 	local railShape = { -25, -5, 25, -5, 25, 5, -25, 5 }
 	physics.addBody( rail, "static", { friction=0, shape=railShape } )
 
+	rails[#rails+1] = rail
 	group:insert( rail)
 
 end
@@ -143,7 +143,8 @@ end
 function trainTraffNoe(self, event)
 	if ( event.phase == "ended" ) then
  		if (event.other.type == "rail") then
-
+ 			train.y = event.other.y
+ 			train.rotation = event.other.rotation
  			train.canJump = 1
  		end
  	end
@@ -174,7 +175,15 @@ function scene:destroyScene( event )
 end
 
 function gameLoop(event)
-	train.x = train.x+2;
+
+	if train.canJump > 0 then
+
+		train:setLinearVelocity( 100, 0 )
+	end
+	-- train.x = train.x+1
+	for i = 1, #rails do
+		rails[i].x = rails[i].x-1
+	end
 end
 
 Runtime:addEventListener("enterFrame", gameLoop)
