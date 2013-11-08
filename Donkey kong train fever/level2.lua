@@ -40,16 +40,29 @@ function rail(group, x1, y1, x2, y2)
 	
 	local dx = x2-x1
 	local dy = y2-y1
+	local len = math.sqrt(dx*dx+dy*dy)
 	
-	rail.dx = dx / math.sqrt(dx*dx+dy*dy)
-	rail.dy = dy / math.sqrt(dx*dx+dy*dy)
+	rail.dx = dx / len
+	rail.dy = dy / len
 	
 	local railShape = { 0,0, x2-x1, y2-y1, x2-x1, y2-y1+10, 0, 10 }
 	rail:setReferencePoint( display.TopLeftReferencePoint )
 	physics.addBody( rail, "static", { shape=railShape } )
+	rail:setFillColor(200)
 	rail.type = "rail"
 	
+	
+	local rail2 = display.newRect( x1, y1, len, 5 )
+	rail2:setReferencePoint( display.TopLeftReferencePoint )
+	rail:setFillColor(200)
+	rail2.rotation = rot(dx, dy)
+
 	group:insert(rail)
+	group:insert(rail2)
+end
+
+function rot(dx, dy)
+	return 180*math.atan(dy/dx)/math.pi
 end
 
 -- Called when the scene's view does not exist:
@@ -62,14 +75,15 @@ function scene:createScene( event )
 	pointText = display.newText( group, points, 50, 10, native.systemFont, 16 )
 	pointBanana = addBanana(group, 0, 20)
 	
-	local knapp = display.newRect(380, 0, 100, 100)
-	knapp:setFillColor(200)
+	local knapp = display.newRect(0, 0, screenW, screenH)
+	--knapp:setFillColor(200)
+	knapp.alpha = 0.01
 	self.view:insert(knapp)
 
 	group:addEventListener( "touch", jumpAction )
 	group:addEventListener( "key", jumpAction )
 	
-	physics.setDrawMode("hybrid")
+	--physics.setDrawMode("hybrid")
 		
 	train = display.newSprite( trainSprite(), { 
 		name = "normalRun",  --name of animation sequence
