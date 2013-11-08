@@ -92,9 +92,14 @@ function scene:createScene( event )
 	rail(group, 250,250, 300,200)
 	rail(group, 400,200, 500,250)
 	rail(group, 500,250, 800,250)
+	
+	rail(group, 800,300, 900,300)
+	rail(group, 900,300, 1000,200)
+	rail(group, 1000,200, 1150,200)
+	rail(group, 1250,150, 1400,150)
 
 	addBanana(group, 220, 230)
-	
+	addBanana(group, 1200, 100)
 	group:insert(train)
 
 	knapp:addEventListener( "touch", jumpAction )
