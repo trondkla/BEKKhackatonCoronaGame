@@ -11,6 +11,9 @@ local scene = storyboard.newScene()
 local physics = require "physics"
 physics.start(); physics.pause()
 
+local points = 0
+local pointText
+
 --------------------------------------------
 
 -- forward declarations and other locals
@@ -54,6 +57,8 @@ function scene:createScene( event )
 	local group = display:newGroup()
 	self.view:insert(group)
 	gr = group
+
+	pointText = display.newText( group, points, 50, 10, native.systemFont, 16 )
 	
 	local knapp = display.newRect(380, 0, 100, 100)
 	knapp:setFillColor(200)
@@ -97,11 +102,15 @@ end
 
 function gameLoop(event)
 	gr.x = 0 - train.x + 100
+	pointText.text = points
+	pointText.x = train.x - 50
 end
 
 Runtime:addEventListener("enterFrame", gameLoop)
 
 function onLocalCollision( self, event )
+	local group = self.view
+
 	if event.other.type == "rail" then
 		if (event.phase == "began") then
 			physics.setGravity(0,0)
@@ -119,7 +128,12 @@ function onLocalCollision( self, event )
 		end
 	end
 	if event.other.type == "banana" then
-
+		if (event.phase == "began") then
+			event.other:removeSelf()
+			event.other = nil
+			points = points + 1;
+			print("Points: " .. points)
+		end
 	end
 end
 
