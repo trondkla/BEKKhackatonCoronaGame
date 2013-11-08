@@ -14,7 +14,7 @@ physics.start(); physics.pause()
 --------------------------------------------
 
 -- forward declarations and other locals
-local screenW, screenH, halfW = display.contentWidth, display.contentHeight, display.contentWidth*0.5
+local screenW, screenH, halfW, halfH = display.contentWidth, display.contentHeight, display.contentWidth*0.5, display.contentHeight*0.5
 
 -----------------------------------------------------------------------------------------
 -- BEGINNING OF YOUR IMPLEMENTATION
@@ -26,6 +26,8 @@ local screenW, screenH, halfW = display.contentWidth, display.contentHeight, dis
 
 -- Called when the scene's view does not exist:
 function scene:createScene( event )
+	physics.setDrawMode( "hybrid" )
+
 	local group = self.view
 
 	-- create a grey rectangle as the backdrop
@@ -83,19 +85,28 @@ function scene:createScene( event )
 	-- add physics to the crate
 	physics.addBody( train, { density=1.0, friction=0.3, bounce=0.3 } )
 	
-	-- create a grass object and add physics (with custom shape)
-	local rail = display.newImageRect( "rail.png", screenW, 28 )
-	rail:setReferencePoint( display.BottomLeftReferencePoint )
-	rail.x, rail.y = 0, display.contentHeight
-	
-	-- define a shape that's slightly shorter than image bounds (set draw mode to "hybrid" or "debug" to see)
-	local railShape = { -halfW,-5, halfW,-5, halfW,5, -halfW,5 }
-	physics.addBody( rail, "static", { friction=0.3, shape=railShape } )
-	
 	-- all display objects must be inserted into group
 	group:insert( background )
-	group:insert( rail)
+
+	addRail(group, 0, halfH + 30)
+	addRail(group, 50, halfH + 30)
+
 	group:insert( train)
+
+end
+
+function addRail(group, x , y)
+	-- create a grass object and add physics (with custom shape)
+	local rail = display.newImageRect( "singlerail.png", 50, 29 )
+	rail:setReferencePoint( display.BottomLeftReferencePoint )
+	rail.x, rail.y = x, y
+	
+	-- define a shape that's slightly shorter than image bounds (set draw mode to "hybrid" or "debug" to see)
+	local railShape = { -24, -14, 24, -14, 24, 14, -24, 14 }
+	physics.addBody( rail, "static", { friction=0.3, shape=railShape } )
+
+	group:insert( rail)
+
 end
 
 -- Called immediately after scene has moved onscreen:
