@@ -13,6 +13,7 @@ physics.start(); physics.pause()
 
 local points = 0
 local pointText
+local pointBanana
 
 --------------------------------------------
 
@@ -53,12 +54,13 @@ end
 
 -- Called when the scene's view does not exist:
 function scene:createScene( event )
-				physics.setGravity(0,60)
+	physics.setGravity(0,60)
 	local group = display:newGroup()
 	self.view:insert(group)
 	gr = group
 
 	pointText = display.newText( group, points, 50, 10, native.systemFont, 16 )
+	pointBanana = addBanana(group, 0, 20)
 	
 	local knapp = display.newRect(380, 0, 100, 100)
 	knapp:setFillColor(200)
@@ -104,6 +106,7 @@ function gameLoop(event)
 	gr.x = 0 - train.x + 100
 	pointText.text = points
 	pointText.x = train.x - 50
+	pointBanana.x = train.x - 70
 end
 
 Runtime:addEventListener("enterFrame", gameLoop)
@@ -191,7 +194,7 @@ function addBanana(group, x , y, r)
 
 	group:insert( banana)
 	banana:play()
-
+	return banana
 end
 
 function trainSprite()
