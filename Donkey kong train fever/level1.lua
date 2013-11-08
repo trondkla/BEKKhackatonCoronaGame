@@ -13,6 +13,8 @@ physics.start(); physics.pause()
 
 local train
 
+local railXPositions = { 0, 45, 90, 135, 180, 225, 270, 315, 360 }
+
 --------------------------------------------
 
 -- forward declarations and other locals
@@ -28,7 +30,7 @@ local screenW, screenH, halfW, halfH = display.contentWidth, display.contentHeig
 
 -- Called when the scene's view does not exist:
 function scene:createScene( event )
-	-- physics.setDrawMode( "hybrid" )
+	physics.setDrawMode( "hybrid" )
 
 	local group = self.view
 
@@ -82,7 +84,7 @@ function scene:createScene( event )
 	    loopDirection = "forward"  --optional, either "forward" (default) or "bounce" which will play forward then backwards through the sequence of frames
 	})  --if defining more sequences, place a comma here and proceed to the next sequence sub-table )
 	train.x, train.y = 58, 58
-	train.canJump = 1
+	train.canJump = 0
 	train.type = "train"
 	train.collision = trainTraffNoe
 	train:addEventListener( "collision", train )
@@ -96,22 +98,24 @@ function scene:createScene( event )
 	-- all display objects must be inserted into group
 	group:insert( background )
 
-	addRail(group, 0, halfH + 30)
-	addRail(group, 50, halfH + 30)
+	addRail(group, railXPositions[1], halfH + 30, 0)
+	addRail(group, railXPositions[2], halfH + 30, 0)
+	addRail(group, railXPositions[3], halfH + 30, 10)
 
 	group:insert( train)
 
 end
 
-function addRail(group, x , y)
+function addRail(group, x , y, r)
 	-- create a grass object and add physics (with custom shape)
 	local rail = display.newImageRect( "singlerail.png", 50, 29 )
 	rail:setReferencePoint( display.BottomLeftReferencePoint )
 	rail.x, rail.y = x, y
 	rail.type = "rail"
+	rail.rotation = r
 	
 	-- define a shape that's slightly shorter than image bounds (set draw mode to "hybrid" or "debug" to see)
-	local railShape = { -24, -14, 24, -14, 24, 14, -24, 14 }
+	local railShape = { -25, -5, 25, -5, 25, 5, -25, 5 }
 	physics.addBody( rail, "static", { friction=0.3, shape=railShape } )
 
 	group:insert( rail)
