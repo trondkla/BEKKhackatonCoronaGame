@@ -36,7 +36,7 @@ local gr
 function rail(group, x1, y1, x2, y2)
 
 	local rail = display.newRect( x1, y1, 0, 0 )
-	rail:setFillColor(230)
+	rail:setFillColor(210)
 	
 	local dx = x2-x1
 	local dy = y2-y1
@@ -80,13 +80,12 @@ function scene:createScene( event )
 	    loopDirection = "forward"  --optional, either "forward" (default) or "bounce" which will play forward then backwards through the sequence of frames
 	})  --if defining more sequences, place a comma here and proceed to the next sequence sub-table )
 	train.x, train.y = 58, 58
-	train.canJump = 0
 	train.type = "train"
 	train.collision = onLocalCollision
 	train:addEventListener( "collision", train )
 	train:play()
 
-	physics.addBody( train, {density=1.0, friction=0, bounce=0, radius=10} )
+	physics.addBody( train, {density=1.0, friction=0, bounce=0, radius=30} )
 
 	
 	rail(group, 0,200, 200,250)
@@ -104,7 +103,7 @@ function scene:createScene( event )
 	addBanana(group, 1200, 100)
 	group:insert(train)
 
-	knapp:addEventListener( "touch", jumpAction )
+	--knapp:addEventListener( "touch", jumpAction )
 end
 
 function gameLoop(event)
