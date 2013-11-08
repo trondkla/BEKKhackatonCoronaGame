@@ -11,6 +11,8 @@ local scene = storyboard.newScene()
 local physics = require "physics"
 physics.start(); physics.pause()
 
+local train
+
 --------------------------------------------
 
 -- forward declarations and other locals
@@ -26,7 +28,7 @@ local screenW, screenH, halfW, halfH = display.contentWidth, display.contentHeig
 
 -- Called when the scene's view does not exist:
 function scene:createScene( event )
-	physics.setDrawMode( "hybrid" )
+	-- physics.setDrawMode( "hybrid" )
 
 	local group = self.view
 
@@ -71,7 +73,7 @@ function scene:createScene( event )
     sheetContentHeight = 58
 })
 
-	local train = display.newSprite( spriteGraphics, { 
+	train = display.newSprite( spriteGraphics, { 
 		name = "normalRun",  --name of animation sequence
 	    start = 1,  --starting frame index
 	    count = 3,  --total number of frames to animate consecutively before stopping or looping
@@ -80,10 +82,16 @@ function scene:createScene( event )
 	    loopDirection = "forward"  --optional, either "forward" (default) or "bounce" which will play forward then backwards through the sequence of frames
 	})  --if defining more sequences, place a comma here and proceed to the next sequence sub-table )
 	train.x, train.y = 58, 58
+	train.canJump = 1
+	train.type = "train"
+	train.collision = trainTraffNoe
+	train:addEventListener( "collision", train )
 	train:play()
+
+	background:addEventListener( "touch", touchAction )
 	
 	-- add physics to the crate
-	physics.addBody( train, { density=1.0, friction=0.3, bounce=0.3 } )
+	physics.addBody( train, { density=1.0, friction=0.3, bounce=0.1 } )
 	
 	-- all display objects must be inserted into group
 	group:insert( background )
@@ -100,6 +108,7 @@ function addRail(group, x , y)
 	local rail = display.newImageRect( "singlerail.png", 50, 29 )
 	rail:setReferencePoint( display.BottomLeftReferencePoint )
 	rail.x, rail.y = x, y
+	rail.type = "rail"
 	
 	-- define a shape that's slightly shorter than image bounds (set draw mode to "hybrid" or "debug" to see)
 	local railShape = { -24, -14, 24, -14, 24, 14, -24, 14 }
@@ -109,7 +118,22 @@ function addRail(group, x , y)
 
 end
 
--- Called immediately after scene has moved onscreen:
+function touchAction(event)
+   if ( event.phase == "began" and train.canJump > 0 ) then
+      train:applyForce( 0, -800, train.x, train.y )
+      train.canJump = 0;
+   end
+end
+
+function trainTraffNoe(self, event)
+	if ( event.phase == "ended" ) then
+ 		if (event.other.type == "rail") then
+ 			train.canJump = 1
+ 		end
+ 	end
+end
+
+-- Called imediately after scene has moved onscreen:
 function scene:enterScene( event )
 	local group = self.view
 	
