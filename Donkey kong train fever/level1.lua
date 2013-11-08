@@ -31,28 +31,71 @@ function scene:createScene( event )
 	-- create a grey rectangle as the backdrop
 	local background = display.newRect( 0, 0, screenW, screenH )
 	background:setFillColor( 128 )
-	
-	-- make a crate (off-screen), position it, and rotate slightly
-	local crate = display.newImageRect( "crate.png", 90, 90 )
-	crate.x, crate.y = 160, -100
-	crate.rotation = 15
+
+
+	local spriteGraphics = graphics.newImageSheet( "train.png", {
+    --array of tables representing each frame (required)
+    frames =
+    {
+        -- FRAME 1:
+        {
+            --all parameters below are required for each frame
+            x = 0,
+            y = 0,
+            width = 55,
+            height = 58
+        },
+
+        -- FRAME 2:
+        {
+            x = 56,
+            y = 0,
+            width = 55,
+            height = 58
+        },
+        -- FRAME 3:
+        {
+            x = 113,
+            y = 0,
+            width = 55,
+            height = 58
+        },
+
+        -- FRAME 3 and so on...
+    },
+
+    --optional parameters; used for dynamic resolution support
+    sheetContentWidth = 165,
+    sheetContentHeight = 58
+})
+
+	local train = display.newSprite( spriteGraphics, { 
+		name = "normalRun",  --name of animation sequence
+	    start = 1,  --starting frame index
+	    count = 3,  --total number of frames to animate consecutively before stopping or looping
+	    time = 800,  --optional, in milliseconds; if not supplied, the sprite is frame-based
+	    loopCount = 0,  --optional. 0 (default) repeats forever; a positive integer specifies the number of loops
+	    loopDirection = "forward"  --optional, either "forward" (default) or "bounce" which will play forward then backwards through the sequence of frames
+	})  --if defining more sequences, place a comma here and proceed to the next sequence sub-table )
+	train.x, train.y = 58, 58
+	train:play()
 	
 	-- add physics to the crate
-	physics.addBody( crate, { density=1.0, friction=0.3, bounce=0.3 } )
+	physics.addBody( train, { density=1.0, friction=0.3, bounce=0.3 } )
 	
 	-- create a grass object and add physics (with custom shape)
-	local grass = display.newImageRect( "grass.png", screenW, 82 )
-	grass:setReferencePoint( display.BottomLeftReferencePoint )
-	grass.x, grass.y = 0, display.contentHeight
+	local rail = display.newImageRect( "rail.png", screenW, 28 )
+	rail:setReferencePoint( display.BottomLeftReferencePoint )
+	rail.x, rail.y = 0, display.contentHeight
 	
 	-- define a shape that's slightly shorter than image bounds (set draw mode to "hybrid" or "debug" to see)
-	local grassShape = { -halfW,-34, halfW,-34, halfW,34, -halfW,34 }
-	physics.addBody( grass, "static", { friction=0.3, shape=grassShape } )
+	local railShape = { -halfW,-5, halfW,-5, halfW,5, -halfW,5 }
+	physics.addBody( rail, "static", { friction=0.3, shape=railShape } )
 	
 	-- all display objects must be inserted into group
 	group:insert( background )
-	group:insert( grass)
-	group:insert( crate )
+	group:insert( rail)
+	group:insert( train)
 end
 
 -- Called immediately after scene has moved onscreen:
